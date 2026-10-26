@@ -1,0 +1,1227 @@
+# Golanger Exercise Metadata
+# This file defines the order, mode, and hints for all exercises.
+
+# ============================================================================
+# Phase 1: Go Fundamentals
+# ============================================================================
+
+# --- 00_intro ---
+
+[[exercises]]
+name = "intro1"
+path = "exercises/00_intro/intro1.go"
+mode = "compile"
+hint = """
+In Go, we use the `fmt` package to print to the console.
+The function is `fmt.Println()` — make sure you import "fmt"
+and call the function correctly.
+"""
+
+[[exercises]]
+name = "intro2"
+path = "exercises/00_intro/intro2.go"
+mode = "compile"
+hint = """
+`fmt.Printf` uses format verbs like `%s` for strings, `%d` for integers,
+and `%f` for floats. Don't forget `\\n` for a newline!
+"""
+
+# --- 01_variables ---
+
+[[exercises]]
+name = "variables1"
+path = "exercises/01_variables/variables1.go"
+mode = "compile"
+hint = """
+In Go, you declare variables with the `var` keyword:
+  var x int = 5
+  var name string = "Gopher"
+"""
+
+[[exercises]]
+name = "variables2"
+path = "exercises/01_variables/variables2.go"
+mode = "compile"
+hint = """
+The short declaration operator `:=` declares and initializes a variable:
+  x := 5
+  name := "Gopher"
+This can only be used inside functions.
+"""
+
+[[exercises]]
+name = "variables3"
+path = "exercises/01_variables/variables3.go"
+mode = "compile"
+hint = """
+You can group variable declarations in a `var` block:
+  var (
+      x    int    = 5
+      name string = "Go"
+  )
+"""
+
+[[exercises]]
+name = "variables4"
+path = "exercises/01_variables/variables4.go"
+mode = "compile"
+hint = """
+Constants are declared with `const` and cannot be changed after declaration:
+  const Pi = 3.14159
+  const Greeting = "Hello"
+Constants must be assigned at compile time — no function calls allowed.
+"""
+
+[[exercises]]
+name = "variables5"
+path = "exercises/01_variables/variables5.go"
+mode = "compile"
+hint = """
+In Go, variables have "zero values" when declared without initialization:
+  int → 0, float64 → 0.0, string → "", bool → false
+Use `var x int` (no `= value`) to get the zero value.
+"""
+
+# --- 02_types ---
+
+[[exercises]]
+name = "types1"
+path = "exercises/02_types/types1.go"
+mode = "compile"
+hint = """
+Go has several basic types:
+  int, int8, int16, int32, int64
+  float32, float64
+  string, bool, byte, rune
+Make sure each variable has the correct type.
+"""
+
+[[exercises]]
+name = "types2"
+path = "exercises/02_types/types2.go"
+mode = "compile"
+hint = """
+Go requires explicit type conversion between numeric types:
+  var i int = 42
+  var f float64 = float64(i)
+  var u uint = uint(f)
+You cannot mix types in arithmetic without converting first.
+"""
+
+[[exercises]]
+name = "types3"
+path = "exercises/02_types/types3.go"
+mode = "compile"
+hint = """
+Go can infer types from the right-hand side of `:=` or `var x = value`:
+  x := 42       // int
+  y := 3.14     // float64
+  z := "hello"  // string
+  w := true     // bool
+"""
+
+# --- 03_functions ---
+
+[[exercises]]
+name = "functions1"
+path = "exercises/03_functions/functions1.go"
+mode = "compile"
+hint = """
+Functions in Go are declared with `func`:
+  func add(a int, b int) int {
+      return a + b
+  }
+If parameters share a type, you can shorten: `func add(a, b int) int`
+"""
+
+[[exercises]]
+name = "functions2"
+path = "exercises/03_functions/functions2.go"
+mode = "compile"
+hint = """
+Go functions can return multiple values:
+  func divide(a, b float64) (float64, error) {
+      if b == 0 {
+          return 0, errors.New("cannot divide by zero")
+      }
+      return a / b, nil
+  }
+"""
+
+[[exercises]]
+name = "functions3"
+path = "exercises/03_functions/functions3.go"
+mode = "compile"
+hint = """
+Named return values act as variables defined at the top of the function:
+  func split(sum int) (x, y int) {
+      x = sum * 4 / 9
+      y = sum - x
+      return  // "naked" return — returns x and y
+  }
+"""
+
+[[exercises]]
+name = "functions4"
+path = "exercises/03_functions/functions4.go"
+mode = "compile"
+hint = """
+Variadic functions accept a variable number of arguments:
+  func sum(nums ...int) int {
+      total := 0
+      for _, n := range nums {
+          total += n
+      }
+      return total
+  }
+Call it with: sum(1, 2, 3) or sum(mySlice...)
+"""
+
+[[exercises]]
+name = "functions5"
+path = "exercises/03_functions/functions5.go"
+mode = "compile"
+hint = """
+Functions are first-class values in Go. You can assign them to variables:
+  add := func(a, b int) int { return a + b }
+  result := add(3, 4)
+
+Closures capture variables from their enclosing scope:
+  func counter() func() int {
+      count := 0
+      return func() int {
+          count++
+          return count
+      }
+  }
+"""
+
+# --- 04_control_flow ---
+
+[[exercises]]
+name = "if1"
+path = "exercises/04_control_flow/if1.go"
+mode = "compile"
+hint = """
+Go's `if` doesn't need parentheses around the condition:
+  if x > 10 {
+      fmt.Println("big")
+  } else {
+      fmt.Println("small")
+  }
+But the braces `{}` are always required.
+"""
+
+[[exercises]]
+name = "if2"
+path = "exercises/04_control_flow/if2.go"
+mode = "compile"
+hint = """
+Go's `if` can include a short statement before the condition:
+  if v := math.Pow(x, n); v < lim {
+      return v
+  }
+The variable `v` is only in scope inside the if/else block.
+"""
+
+[[exercises]]
+name = "switch1"
+path = "exercises/04_control_flow/switch1.go"
+mode = "compile"
+hint = """
+Go's switch doesn't need `break` — cases don't fall through by default:
+  switch day {
+  case "Monday":
+      fmt.Println("Start of week")
+  case "Friday":
+      fmt.Println("TGIF!")
+  default:
+      fmt.Println("Regular day")
+  }
+"""
+
+[[exercises]]
+name = "for1"
+path = "exercises/04_control_flow/for1.go"
+mode = "compile"
+hint = """
+Go has only `for` — no while or do-while:
+  for i := 0; i < 10; i++ {
+      fmt.Println(i)
+  }
+The init and post statements are optional.
+"""
+
+[[exercises]]
+name = "for2"
+path = "exercises/04_control_flow/for2.go"
+mode = "compile"
+hint = """
+`for` with just a condition acts like `while`:
+  n := 1
+  for n < 100 {
+      n *= 2
+  }
+"""
+
+[[exercises]]
+name = "for3"
+path = "exercises/04_control_flow/for3.go"
+mode = "compile"
+hint = """
+`range` iterates over slices, maps, strings, and channels:
+  for i, v := range mySlice {
+      fmt.Printf("index %d: value %d\\n", i, v)
+  }
+Use `_` to ignore the index or value: `for _, v := range ...`
+"""
+
+# --- 05_strings ---
+
+[[exercises]]
+name = "strings1"
+path = "exercises/05_strings/strings1.go"
+mode = "compile"
+hint = """
+Strings in Go are immutable sequences of bytes. Concatenate with `+`:
+  greeting := "Hello" + " " + "World"
+You can also use fmt.Sprintf: `s := fmt.Sprintf("Hello %s", name)`
+"""
+
+[[exercises]]
+name = "strings2"
+path = "exercises/05_strings/strings2.go"
+mode = "compile"
+hint = """
+`fmt.Sprintf` returns a formatted string without printing it:
+  s := fmt.Sprintf("Name: %s, Age: %d", name, age)
+Common verbs: %s (string), %d (int), %f (float), %v (any value), %T (type).
+"""
+
+[[exercises]]
+name = "strings3"
+path = "exercises/05_strings/strings3.go"
+mode = "test"
+hint = """
+The `strings` package has many useful functions:
+  strings.Contains(s, substr) bool
+  strings.Replace(s, old, new, n) string
+  strings.Split(s, sep) []string
+  strings.ToUpper(s) / strings.ToLower(s)
+  strings.TrimSpace(s) string
+  strings.HasPrefix(s, prefix) / strings.HasSuffix(s, suffix)
+"""
+
+# --- 06_arrays_slices ---
+
+[[exercises]]
+name = "arrays1"
+path = "exercises/06_arrays_slices/arrays1.go"
+mode = "compile"
+hint = """
+Arrays in Go have a fixed size and the size is part of the type:
+  var a [5]int              // array of 5 ints (all zero)
+  b := [3]string{"a", "b", "c"}  // array literal
+  fmt.Println(a[0])        // access element
+  fmt.Println(len(b))      // length
+"""
+
+[[exercises]]
+name = "slices1"
+path = "exercises/06_arrays_slices/slices1.go"
+mode = "compile"
+hint = """
+Slices are dynamic, flexible views into arrays:
+  s := []int{1, 2, 3}       // slice literal
+  s = append(s, 4, 5)       // append returns a new slice
+  fmt.Println(len(s))       // 5
+Remember: `append` may allocate a new underlying array!
+"""
+
+[[exercises]]
+name = "slices2"
+path = "exercises/06_arrays_slices/slices2.go"
+mode = "compile"
+hint = """
+You can create sub-slices with the slice operator [low:high]:
+  s := []int{0, 1, 2, 3, 4}
+  sub := s[1:3]  // [1, 2] — low inclusive, high exclusive
+  s[:3]          // [0, 1, 2] — from start
+  s[2:]          // [2, 3, 4] — to end
+Use `copy(dst, src)` to copy slices.
+"""
+
+[[exercises]]
+name = "slices3"
+path = "exercises/06_arrays_slices/slices3.go"
+mode = "test"
+hint = """
+`make([]T, length, capacity)` creates a slice with specified length and capacity:
+  s := make([]int, 0, 10)  // len=0, cap=10
+  s = append(s, 1)          // len=1, cap=10
+  fmt.Println(len(s), cap(s))
+`len()` returns current length, `cap()` returns underlying array capacity.
+"""
+
+# --- 07_maps ---
+
+[[exercises]]
+name = "maps1"
+path = "exercises/07_maps/maps1.go"
+mode = "compile"
+hint = """
+Maps are Go's hash tables / dictionaries:
+  m := map[string]int{
+      "alice": 25,
+      "bob":   30,
+  }
+Or use make: `m := make(map[string]int)`
+Access: `age := m["alice"]`
+Set: `m["charlie"] = 35`
+"""
+
+[[exercises]]
+name = "maps2"
+path = "exercises/07_maps/maps2.go"
+mode = "compile"
+hint = """
+Check if a key exists with the "comma ok" pattern:
+  value, ok := m[key]
+  if ok {
+      fmt.Println("Found:", value)
+  } else {
+      fmt.Println("Not found")
+  }
+"""
+
+[[exercises]]
+name = "maps3"
+path = "exercises/07_maps/maps3.go"
+mode = "test"
+hint = """
+Delete a key with `delete(m, key)`.
+Iterate over a map with range:
+  for key, value := range m {
+      fmt.Println(key, value)
+  }
+Note: map iteration order is not guaranteed!
+"""
+
+# --- 08_structs ---
+
+[[exercises]]
+name = "structs1"
+path = "exercises/08_structs/structs1.go"
+mode = "compile"
+hint = """
+Structs are collections of fields:
+  type Person struct {
+      Name string
+      Age  int
+  }
+Create instances: `p := Person{Name: "Alice", Age: 30}`
+Access fields: `p.Name`
+"""
+
+[[exercises]]
+name = "structs2"
+path = "exercises/08_structs/structs2.go"
+mode = "compile"
+hint = """
+Methods are functions with a receiver argument:
+  func (r Rectangle) Area() float64 {
+      return r.Width * r.Height
+  }
+Value receivers get a copy of the struct.
+"""
+
+[[exercises]]
+name = "structs3"
+path = "exercises/08_structs/structs3.go"
+mode = "compile"
+hint = """
+Pointer receivers can modify the struct they're called on:
+  func (r *Rectangle) Scale(factor float64) {
+      r.Width *= factor
+      r.Height *= factor
+  }
+Use pointer receivers when you need to modify the struct or avoid copying.
+"""
+
+[[exercises]]
+name = "structs4"
+path = "exercises/08_structs/structs4.go"
+mode = "test"
+hint = """
+Go supports struct embedding (composition over inheritance):
+  type Animal struct {
+      Name string
+  }
+  func (a Animal) Speak() string { return a.Name + " speaks" }
+
+  type Dog struct {
+      Animal  // embedded — Dog "inherits" Animal's fields and methods
+      Breed string
+  }
+  d := Dog{Animal: Animal{Name: "Rex"}, Breed: "Lab"}
+  d.Name    // promoted from Animal
+  d.Speak() // promoted from Animal
+"""
+
+# --- 09_interfaces ---
+
+[[exercises]]
+name = "interfaces1"
+path = "exercises/09_interfaces/interfaces1.go"
+mode = "compile"
+hint = """
+Interfaces define behavior (method sets). Types implement them implicitly:
+  type Shape interface {
+      Area() float64
+  }
+  type Circle struct { Radius float64 }
+  func (c Circle) Area() float64 {
+      return math.Pi * c.Radius * c.Radius
+  }
+Circle now implements Shape — no `implements` keyword needed!
+"""
+
+[[exercises]]
+name = "interfaces2"
+path = "exercises/09_interfaces/interfaces2.go"
+mode = "compile"
+hint = """
+The `fmt.Stringer` interface lets you customize how a type is printed:
+  type Stringer interface {
+      String() string
+  }
+Implement `String() string` on your type to control fmt.Println output.
+"""
+
+[[exercises]]
+name = "interfaces3"
+path = "exercises/09_interfaces/interfaces3.go"
+mode = "test"
+hint = """
+The empty interface `interface{}` (or `any`) can hold any value:
+  var i interface{} = "hello"
+Type assertion extracts the concrete value:
+  s := i.(string)        // panics if wrong type
+  s, ok := i.(string)    // safe — ok is false if wrong type
+"""
+
+[[exercises]]
+name = "interfaces4"
+path = "exercises/09_interfaces/interfaces4.go"
+mode = "test"
+hint = """
+Type switches let you handle different concrete types:
+  switch v := i.(type) {
+  case int:
+      fmt.Println("int:", v)
+  case string:
+      fmt.Println("string:", v)
+  default:
+      fmt.Println("unknown type")
+  }
+"""
+
+# --- 10_errors ---
+
+[[exercises]]
+name = "errors1"
+path = "exercises/10_errors/errors1.go"
+mode = "compile"
+hint = """
+In Go, errors are values. Functions return errors as the last return value:
+  func divide(a, b float64) (float64, error) {
+      if b == 0 {
+          return 0, errors.New("division by zero")
+      }
+      return a / b, nil
+  }
+Always check: `result, err := divide(10, 0); if err != nil { ... }`
+"""
+
+[[exercises]]
+name = "errors2"
+path = "exercises/10_errors/errors2.go"
+mode = "compile"
+hint = """
+Custom error types implement the `error` interface:
+  type NotFoundError struct {
+      Name string
+  }
+  func (e *NotFoundError) Error() string {
+      return e.Name + " not found"
+  }
+Return it: `return nil, &NotFoundError{Name: "item"}`
+"""
+
+[[exercises]]
+name = "errors3"
+path = "exercises/10_errors/errors3.go"
+mode = "test"
+hint = """
+`errors.Is(err, target)` checks if err (or any wrapped error) equals target.
+`errors.As(err, &target)` checks if err can be assigned to target type.
+  var nfe *NotFoundError
+  if errors.As(err, &nfe) {
+      fmt.Println(nfe.Name)
+  }
+"""
+
+[[exercises]]
+name = "errors4"
+path = "exercises/10_errors/errors4.go"
+mode = "test"
+hint = """
+Wrap errors with context using `fmt.Errorf` and the `%w` verb:
+  return fmt.Errorf("failed to open file: %w", err)
+The original error can be unwrapped with `errors.Unwrap(err)` or
+checked with `errors.Is`.
+"""
+
+# --- 11_pointers ---
+
+[[exercises]]
+name = "pointers1"
+path = "exercises/11_pointers/pointers1.go"
+mode = "compile"
+hint = """
+`&` gets the address of a variable, `*` dereferences a pointer:
+  x := 42
+  p := &x      // p is *int, points to x
+  fmt.Println(*p)  // 42
+  *p = 21      // modifies x through the pointer
+  fmt.Println(x)   // 21
+"""
+
+[[exercises]]
+name = "pointers2"
+path = "exercises/11_pointers/pointers2.go"
+mode = "compile"
+hint = """
+Value receivers get a copy — changes don't affect the original.
+Pointer receivers can modify the original:
+  func (c *Counter) Increment() { c.Value++ }  // modifies original
+  func (c Counter) GetValue() int { return c.Value }  // reads copy
+"""
+
+[[exercises]]
+name = "pointers3"
+path = "exercises/11_pointers/pointers3.go"
+mode = "test"
+hint = """
+Always check for nil pointers before dereferencing:
+  func safeDereference(p *int) (int, error) {
+      if p == nil {
+          return 0, errors.New("nil pointer")
+      }
+      return *p, nil
+  }
+"""
+
+# ============================================================================
+# Phase 2: Concurrency
+# ============================================================================
+
+# --- 12_goroutines ---
+
+[[exercises]]
+name = "goroutines1"
+path = "exercises/12_goroutines/goroutines1.go"
+mode = "compile"
+hint = """
+Start a goroutine with the `go` keyword:
+  go myFunction()
+  go func() { fmt.Println("hello from goroutine") }()
+Without waiting, main() might exit before the goroutine finishes.
+Use `time.Sleep` or `sync.WaitGroup` to wait.
+"""
+
+[[exercises]]
+name = "goroutines2"
+path = "exercises/12_goroutines/goroutines2.go"
+mode = "compile"
+hint = """
+`sync.WaitGroup` waits for a collection of goroutines to finish:
+  var wg sync.WaitGroup
+  for i := 0; i < 5; i++ {
+      wg.Add(1)
+      go func(id int) {
+          defer wg.Done()
+          fmt.Println("Worker", id)
+      }(i)
+  }
+  wg.Wait()
+"""
+
+[[exercises]]
+name = "goroutines3"
+path = "exercises/12_goroutines/goroutines3.go"
+mode = "test"
+hint = """
+When multiple goroutines write to shared state, protect it with sync.Mutex:
+  var mu sync.Mutex
+  mu.Lock()
+  // critical section
+  mu.Unlock()
+Or use defer: `mu.Lock(); defer mu.Unlock()`
+"""
+
+[[exercises]]
+name = "goroutines4"
+path = "exercises/12_goroutines/goroutines4.go"
+mode = "test"
+hint = """
+Be careful with loop variables in goroutines! The variable is shared:
+  for i := 0; i < 5; i++ {
+      go func(n int) {  // pass i as argument
+          fmt.Println(n)
+      }(i)  // capture current value of i
+  }
+Without passing `i`, all goroutines might print the same value.
+"""
+
+# --- 13_channels ---
+
+[[exercises]]
+name = "channels1"
+path = "exercises/13_channels/channels1.go"
+mode = "compile"
+hint = """
+Channels are typed conduits for sending and receiving values:
+  ch := make(chan int)
+  go func() { ch <- 42 }()  // send
+  value := <-ch              // receive (blocks until a value is sent)
+Unbuffered channels require both sender and receiver to be ready.
+"""
+
+[[exercises]]
+name = "channels2"
+path = "exercises/13_channels/channels2.go"
+mode = "compile"
+hint = """
+Buffered channels have a capacity — sends don't block until the buffer is full:
+  ch := make(chan int, 3)  // buffer size 3
+  ch <- 1  // doesn't block
+  ch <- 2  // doesn't block
+  ch <- 3  // doesn't block
+  ch <- 4  // BLOCKS — buffer is full
+"""
+
+[[exercises]]
+name = "channels3"
+path = "exercises/13_channels/channels3.go"
+mode = "compile"
+hint = """
+Channel directions restrict a channel to send-only or receive-only:
+  func producer(ch chan<- int) { ch <- 42 }   // can only send
+  func consumer(ch <-chan int) { v := <-ch }   // can only receive
+This prevents accidental misuse and documents intent.
+"""
+
+[[exercises]]
+name = "channels4"
+path = "exercises/13_channels/channels4.go"
+mode = "test"
+hint = """
+`range` on a channel receives values until the channel is closed:
+  for v := range ch {
+      fmt.Println(v)
+  }
+The sender must `close(ch)` when done, or range will block forever.
+"""
+
+[[exercises]]
+name = "channels5"
+path = "exercises/13_channels/channels5.go"
+mode = "test"
+hint = """
+The pipeline pattern chains stages where each is a goroutine:
+  Stage 1: generate values → channel
+  Stage 2: read from channel, transform → another channel
+  Stage 3: read from channel, collect results
+Each stage runs concurrently!
+"""
+
+# --- 14_select ---
+
+[[exercises]]
+name = "select1"
+path = "exercises/14_select/select1.go"
+mode = "compile"
+hint = """
+`select` lets you wait on multiple channel operations:
+  select {
+  case v := <-ch1:
+      fmt.Println("from ch1:", v)
+  case v := <-ch2:
+      fmt.Println("from ch2:", v)
+  }
+It blocks until one case is ready. If multiple are ready, one is chosen randomly.
+"""
+
+[[exercises]]
+name = "select2"
+path = "exercises/14_select/select2.go"
+mode = "compile"
+hint = """
+Use `time.After(duration)` in select for timeouts:
+  select {
+  case result := <-ch:
+      fmt.Println(result)
+  case <-time.After(2 * time.Second):
+      fmt.Println("timeout!")
+  }
+"""
+
+[[exercises]]
+name = "select3"
+path = "exercises/14_select/select3.go"
+mode = "test"
+hint = """
+A `default` case in select makes it non-blocking:
+  select {
+  case v := <-ch:
+      return v, true
+  default:
+      return 0, false  // channel is empty, don't block
+  }
+"""
+
+[[exercises]]
+name = "select4"
+path = "exercises/14_select/select4.go"
+mode = "test"
+hint = """
+The "done channel" pattern signals goroutines to stop:
+  done := make(chan struct{})
+  go func() {
+      for {
+          select {
+          case <-done:
+              return
+          default:
+              // do work
+          }
+      }
+  }()
+  close(done)  // signals all goroutines listening on done
+"""
+
+# --- 15_sync ---
+
+[[exercises]]
+name = "sync1"
+path = "exercises/15_sync/sync1.go"
+mode = "compile"
+hint = """
+`sync.Mutex` provides mutual exclusion:
+  var mu sync.Mutex
+  var count int
+  mu.Lock()
+  count++
+  mu.Unlock()
+Always pair Lock with Unlock. Use `defer mu.Unlock()` for safety.
+"""
+
+[[exercises]]
+name = "sync2"
+path = "exercises/15_sync/sync2.go"
+mode = "compile"
+hint = """
+`sync.RWMutex` allows multiple concurrent readers but only one writer:
+  var rwmu sync.RWMutex
+  rwmu.RLock()    // multiple goroutines can RLock simultaneously
+  rwmu.RUnlock()
+  rwmu.Lock()     // exclusive — blocks until all RLocks are released
+  rwmu.Unlock()
+"""
+
+[[exercises]]
+name = "sync3"
+path = "exercises/15_sync/sync3.go"
+mode = "test"
+hint = """
+`sync.Once` ensures a function runs exactly once, even if called concurrently:
+  var once sync.Once
+  once.Do(func() {
+      // initialization code — runs only once
+  })
+"""
+
+[[exercises]]
+name = "sync4"
+path = "exercises/15_sync/sync4.go"
+mode = "test"
+hint = """
+`sync.Map` is a concurrent-safe map:
+  var m sync.Map
+  m.Store("key", "value")
+  v, ok := m.Load("key")
+  m.Delete("key")
+  m.Range(func(k, v interface{}) bool {
+      fmt.Println(k, v)
+      return true  // continue iteration
+  })
+"""
+
+[[exercises]]
+name = "sync5"
+path = "exercises/15_sync/sync5.go"
+mode = "test"
+hint = """
+Worker pool pattern:
+  1. Create a jobs channel and a results channel
+  2. Start N worker goroutines that read from jobs and write to results
+  3. Send jobs on the jobs channel, then close it
+  4. Collect results from the results channel
+"""
+
+[[exercises]]
+name = "sync6"
+path = "exercises/15_sync/sync6.go"
+mode = "test"
+hint = """
+Fan-out: start multiple goroutines reading from the same channel.
+Fan-in: merge multiple channels into one using a goroutine per source:
+  func merge(channels ...<-chan int) <-chan int {
+      out := make(chan int)
+      var wg sync.WaitGroup
+      for _, ch := range channels {
+          wg.Add(1)
+          go func(c <-chan int) {
+              defer wg.Done()
+              for v := range c { out <- v }
+          }(ch)
+      }
+      go func() { wg.Wait(); close(out) }()
+      return out
+  }
+"""
+
+[[exercises]]
+name = "sync7"
+path = "exercises/15_sync/sync7.go"
+mode = "test"
+hint = """
+`context.Context` provides cancellation and timeouts:
+  ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+  defer cancel()
+  select {
+  case result := <-doWork(ctx):
+      fmt.Println(result)
+  case <-ctx.Done():
+      fmt.Println("cancelled:", ctx.Err())
+  }
+"""
+
+[[exercises]]
+name = "sync8"
+path = "exercises/15_sync/sync8.go"
+mode = "test"
+hint = """
+Rate limiting with time.Ticker:
+  limiter := time.NewTicker(100 * time.Millisecond)
+  defer limiter.Stop()
+  for _, req := range requests {
+      <-limiter.C  // wait for tick
+      processRequest(req)
+  }
+"""
+
+[[exercises]]
+name = "sync9"
+path = "exercises/15_sync/sync9.go"
+mode = "test"
+hint = """
+Use `go test -race` to detect race conditions.
+Common fixes:
+  1. Use sync.Mutex to protect shared state
+  2. Use channels to communicate instead of sharing memory
+  3. Use atomic operations (sync/atomic package)
+Make sure all goroutines properly synchronize access to shared variables.
+"""
+
+# ============================================================================
+# Phase 3: Gin Web Framework
+# ============================================================================
+
+# --- 16_gin_basics ---
+
+[[exercises]]
+name = "gin1"
+path = "exercises/16_gin_basics/gin1.go"
+mode = "test"
+hint = """
+Create a Gin router and add a GET endpoint:
+  r := gin.Default()
+  r.GET("/ping", func(c *gin.Context) {
+      c.JSON(200, gin.H{"message": "pong"})
+  })
+`gin.H` is shorthand for `map[string]interface{}`.
+"""
+
+[[exercises]]
+name = "gin2"
+path = "exercises/16_gin_basics/gin2.go"
+mode = "test"
+hint = """
+Path parameters are defined with `:param`:
+  r.GET("/users/:id", func(c *gin.Context) {
+      id := c.Param("id")
+      c.JSON(200, gin.H{"id": id})
+  })
+"""
+
+[[exercises]]
+name = "gin3"
+path = "exercises/16_gin_basics/gin3.go"
+mode = "test"
+hint = """
+Query parameters are accessed with `c.Query` or `c.DefaultQuery`:
+  r.GET("/search", func(c *gin.Context) {
+      q := c.Query("q")               // empty string if not present
+      page := c.DefaultQuery("page", "1")  // default value
+      c.JSON(200, gin.H{"query": q, "page": page})
+  })
+"""
+
+[[exercises]]
+name = "gin4"
+path = "exercises/16_gin_basics/gin4.go"
+mode = "test"
+hint = """
+Bind JSON request body to a struct:
+  type CreateUser struct {
+      Name  string `json:"name" binding:"required"`
+      Email string `json:"email" binding:"required"`
+  }
+  r.POST("/users", func(c *gin.Context) {
+      var user CreateUser
+      if err := c.ShouldBindJSON(&user); err != nil {
+          c.JSON(400, gin.H{"error": err.Error()})
+          return
+      }
+      c.JSON(201, user)
+  })
+"""
+
+[[exercises]]
+name = "gin5"
+path = "exercises/16_gin_basics/gin5.go"
+mode = "test"
+hint = """
+Use appropriate HTTP status codes:
+  c.JSON(http.StatusOK, ...)           // 200
+  c.JSON(http.StatusCreated, ...)      // 201
+  c.JSON(http.StatusNotFound, ...)     // 404
+  c.JSON(http.StatusBadRequest, ...)   // 400
+Import `net/http` for the named constants.
+"""
+
+[[exercises]]
+name = "gin6"
+path = "exercises/16_gin_basics/gin6.go"
+mode = "test"
+hint = """
+Route groups organize routes with a common prefix:
+  v1 := r.Group("/api/v1")
+  {
+      v1.GET("/users", listUsers)
+      v1.POST("/users", createUser)
+  }
+Middleware can be applied to groups: `v1.Use(authMiddleware())`
+"""
+
+# --- 17_gin_middleware ---
+
+[[exercises]]
+name = "middleware1"
+path = "exercises/17_gin_middleware/middleware1.go"
+mode = "test"
+hint = """
+`gin.Logger()` is a built-in middleware that logs requests:
+  r := gin.New()          // bare engine without defaults
+  r.Use(gin.Logger())     // add logger middleware
+  r.Use(gin.Recovery())   // add recovery middleware
+Or simply use `gin.Default()` which includes both.
+"""
+
+[[exercises]]
+name = "middleware2"
+path = "exercises/17_gin_middleware/middleware2.go"
+mode = "test"
+hint = """
+`gin.Recovery()` recovers from panics and returns a 500 error:
+  r := gin.New()
+  r.Use(gin.Recovery())
+  r.GET("/panic", func(c *gin.Context) {
+      panic("something went wrong")
+  })
+Without Recovery, the server would crash on panic.
+"""
+
+[[exercises]]
+name = "middleware3"
+path = "exercises/17_gin_middleware/middleware3.go"
+mode = "test"
+hint = """
+Custom middleware is a function that returns `gin.HandlerFunc`:
+  func RequestID() gin.HandlerFunc {
+      return func(c *gin.Context) {
+          c.Header("X-Request-ID", "some-unique-id")
+          c.Next()  // call the next handler
+      }
+  }
+Use `c.Next()` to pass to the next middleware/handler.
+"""
+
+[[exercises]]
+name = "middleware4"
+path = "exercises/17_gin_middleware/middleware4.go"
+mode = "test"
+hint = """
+Auth middleware checks the Authorization header:
+  func AuthMiddleware(token string) gin.HandlerFunc {
+      return func(c *gin.Context) {
+          auth := c.GetHeader("Authorization")
+          if auth != "Bearer " + token {
+              c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
+              return
+          }
+          c.Next()
+      }
+  }
+Use `c.Abort()` or `c.AbortWithStatusJSON()` to stop the chain.
+"""
+
+[[exercises]]
+name = "middleware5"
+path = "exercises/17_gin_middleware/middleware5.go"
+mode = "test"
+hint = """
+CORS middleware sets the appropriate headers:
+  func CORSMiddleware() gin.HandlerFunc {
+      return func(c *gin.Context) {
+          c.Header("Access-Control-Allow-Origin", "*")
+          c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+          c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+          if c.Request.Method == "OPTIONS" {
+              c.AbortWithStatus(204)
+              return
+          }
+          c.Next()
+      }
+  }
+"""
+
+# --- 18_gin_advanced ---
+
+[[exercises]]
+name = "gin_advanced1"
+path = "exercises/18_gin_advanced/gin_advanced1.go"
+mode = "test"
+hint = """
+Use binding tags for validation:
+  type Product struct {
+      Name  string  `json:"name" binding:"required,min=2"`
+      Price float64 `json:"price" binding:"required,gt=0"`
+      Stock int     `json:"stock" binding:"gte=0"`
+  }
+`required` = must be present, `min`/`max` = length, `gt`/`gte` = greater than.
+"""
+
+[[exercises]]
+name = "gin_advanced2"
+path = "exercises/18_gin_advanced/gin_advanced2.go"
+mode = "test"
+hint = """
+Error handling middleware catches errors set by handlers:
+  func ErrorHandler() gin.HandlerFunc {
+      return func(c *gin.Context) {
+          c.Next()
+          if len(c.Errors) > 0 {
+              c.JSON(c.Writer.Status(), gin.H{
+                  "errors": c.Errors.Errors(),
+              })
+          }
+      }
+  }
+Handlers add errors with `c.Error(err)`.
+"""
+
+[[exercises]]
+name = "gin_advanced3"
+path = "exercises/18_gin_advanced/gin_advanced3.go"
+mode = "test"
+hint = """
+Render HTML templates in Gin:
+  tmpl := template.Must(template.New("index").Parse(`<h1>Hello {{.Name}}</h1>`))
+  r.SetHTMLTemplate(tmpl)
+  r.GET("/hello/:name", func(c *gin.Context) {
+      c.HTML(200, "index", gin.H{"Name": c.Param("name")})
+  })
+"""
+
+[[exercises]]
+name = "gin_advanced4"
+path = "exercises/18_gin_advanced/gin_advanced4.go"
+mode = "test"
+hint = """
+Handle file uploads with multipart form:
+  r.POST("/upload", func(c *gin.Context) {
+      file, err := c.FormFile("file")
+      if err != nil {
+          c.JSON(400, gin.H{"error": err.Error()})
+          return
+      }
+      c.JSON(200, gin.H{"filename": file.Filename, "size": file.Size})
+  })
+"""
+
+[[exercises]]
+name = "gin_advanced5"
+path = "exercises/18_gin_advanced/gin_advanced5.go"
+mode = "test"
+hint = """
+Use goroutines in handlers for concurrent operations.
+IMPORTANT: Use a copy of the context inside goroutines:
+  r.GET("/concurrent", func(c *gin.Context) {
+      cCp := c.Copy()  // copy for goroutine safety
+      var wg sync.WaitGroup
+      // launch goroutines using cCp...
+  })
+Or better: don't pass gin.Context to goroutines at all — extract data first.
+"""
+
+[[exercises]]
+name = "gin_advanced6"
+path = "exercises/18_gin_advanced/gin_advanced6.go"
+mode = "test"
+hint = """
+WebSocket with Gin using gorilla/websocket:
+  var upgrader = websocket.Upgrader{}
+  r.GET("/ws", func(c *gin.Context) {
+      conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+      // read and write messages...
+  })
+"""
+
+[[exercises]]
+name = "gin_advanced7"
+path = "exercises/18_gin_advanced/gin_advanced7.go"
+mode = "test"
+hint = """
+Graceful shutdown waits for in-flight requests to complete:
+  srv := &http.Server{Addr: ":8080", Handler: r}
+  go srv.ListenAndServe()
+  quit := make(chan os.Signal, 1)
+  signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+  <-quit
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+  defer cancel()
+  srv.Shutdown(ctx)
+"""

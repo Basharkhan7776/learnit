@@ -1,0 +1,386 @@
+import React, { useState, useMemo } from 'react';
+import {
+  CheckCircle2,
+  Circle,
+  Bookmark,
+  ChevronDown,
+  ChevronRight,
+  Search,
+  Layers,
+  PanelLeftClose,
+  PanelLeft,
+  X,
+} from 'lucide-react';
+import { useRustlings } from '../context/RustlingsContext';
+import { cn } from '../lib/utils';
+import { Tooltip } from './ui/Tooltip';
+
+interface SidebarContentProps {
+  onSelectExercise?: () => void;
+}
+
+export const SidebarContent: React.FC<SidebarContentProps> = ({ onSelectExercise }) => {
+  const {
+    exercises,
+    currentExercise,
+    setCurrentExerciseId,
+    completedIds,
+    bookmarkedIds,
+    filter,
+    setFilter,
+    searchQuery,
+    setSearchQuery,
+    getShortcut,
+  } = useRustlings();
+
+  // Open only one accordion category at a time, else close all
+  const [prevExerciseCategory, setPrevExerciseCategory] = useState(currentExercise.category);
+  const [openCategory, setOpenCategory] = useState<string | null>(() => currentExercise.category);
+
+  // When current exercise changes (Next/Prev/Search), automatically sync the open accordion category
+  if (prevExerciseCategory !== currentExercise.category) {
+    setPrevExerciseCategory(currentExercise.category);
+    setOpenCategory(currentExercise.category);
+  }
+
+  const categories = useMemo(() => {
+    const map = new Map<string, {
+      id: string;
+      title: string;
+      order: number;
+      exercises: typeof exercises;
+    }>();
+
+    exercises.forEach(ex => {
+      if (!map.has(ex.category)) {
+        map.set(ex.category, {
+          id: ex.category,
+          title: ex.categoryTitle,
+          order: ex.categoryOrder,
+          exercises: [],
+        });
+      }
+      map.get(ex.category)!.exercises.push(ex);
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.order - b.order);
+  }, [exercises]);
+
+  const filteredCategories = useMemo(() => {
+    return categories
+      .map(cat => {
+        const matchingExercises = cat.exercises.filter(ex => {
+          if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            const matchesName = ex.title.toLowerCase().includes(query) || ex.id.toLowerCase().includes(query);
+            const matchesPath = ex.path.toLowerCase().includes(query);
+            if (!matchesName && !matchesPath) return false;
+          }
+
+          if (filter === 'completed') return completedIds.has(ex.id);
+          if (filter === 'pending') return !completedIds.has(ex.id);
+          if (filter === 'bookmarked') return bookmarkedIds.has(ex.id);
+          return true;
+        });
+
+        return {
+          ...cat,
+          exercises: matchingExercises,
+        };
+      })
+      .filter(cat => cat.exercises.length > 0);
+  }, [categories, searchQuery, filter, completedIds, bookmarkedIds]);
+
+  let effectiveOpenCategory = openCategory;
+  if (searchQuery.trim() && filteredCategories.length > 0) {
+    const hasMatch = filteredCategories.some(
+      c => c.id === openCategory && c.exercises.length > 0
+    );
+    if (!hasMatch) {
+      const firstMatch = filteredCategories.find(c => c.exercises.length > 0);
+      effectiveOpenCategory = firstMatch ? firstMatch.id : openCategory;
+    }
+  }
+
+  const toggleCategory = (catId: string) => {
+    setOpenCategory(prev => ((prev ?? effectiveOpenCategory) === catId ? null : catId));
+  };
+
+  return (
+    <>
+      {/* Search Input (Playground UI style) */}
+      <div className="p-2.5 border-b border-zinc-800/60 shrink-0">
+        <div className="relative flex items-center bg-[#121215] border border-zinc-800 rounded-lg px-2.5 py-1.5 focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-600/30 transition-all">
+          <Search className="w-3.5 h-3.5 text-zinc-400 mr-2 shrink-0 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search exercises..."
+            className="w-full bg-transparent text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none"
+          />
+          {searchQuery ? (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="text-xs text-zinc-400 hover:text-zinc-200 ml-1.5"
+            >
+              ✕
+            </button>
+          ) : (
+            <kbd className="text-[10px] font-mono text-zinc-500 bg-zinc-850 px-1.5 py-0.5 rounded border border-zinc-800 shrink-0">
+              ⌘K
+            </kbd>
+          )}
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1 mt-2 shrink-0">
+          {(['all', 'pending', 'completed', 'bookmarked'] as const).map(f => {
+            const count =
+              f === 'all'
+                ? exercises.length
+                : f === 'completed'
+                ? completedIds.size
+                : f === 'bookmarked'
+                ? bookmarkedIds.size
+                : exercises.length - completedIds.size;
+
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={cn(
+                  'flex-1 py-1 px-1.5 rounded-md text-[10px] font-medium transition-colors text-center truncate',
+                  filter === f
+                    ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-xs'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+                )}
+              >
+                {f.charAt(0).toUpperCase() + f.slice(1)} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Accordion Module List */}
+      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        {filteredCategories.length === 0 ? (
+          <div className="text-center py-8 text-xs text-zinc-500">
+            No exercises found matching your filter.
+          </div>
+        ) : (
+          filteredCategories.map(cat => {
+            const isOpen = effectiveOpenCategory === cat.id;
+            const completedInCat = cat.exercises.filter(e => completedIds.has(e.id)).length;
+            const isCatAllDone = completedInCat === cat.exercises.length && cat.exercises.length > 0;
+
+            return (
+              <div key={cat.id} className="rounded-lg overflow-hidden border border-zinc-800/40 bg-zinc-900/30">
+                {/* Category Header */}
+                <button
+                  onClick={() => toggleCategory(cat.id)}
+                  className="w-full px-2.5 py-1.5 flex items-center justify-between text-xs text-zinc-300 hover:bg-zinc-850 transition-colors"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    {isOpen ? (
+                      <ChevronDown className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                    )}
+                    <span className="font-medium text-zinc-200 truncate">{cat.title}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className={cn(
+                      'text-[10px] font-mono px-1.5 py-0.2 rounded-full border',
+                      isCatAllDone
+                        ? 'bg-zinc-800 text-zinc-200 border-zinc-700'
+                        : 'text-zinc-400 bg-zinc-850 border-zinc-800'
+                    )}>
+                      {completedInCat}/{cat.exercises.length}
+                    </span>
+                  </div>
+                </button>
+
+                {/* Category Exercises */}
+                {isOpen && (
+                  <div className="pl-4 pr-1.5 py-1 space-y-0.5 border-t border-zinc-800/30">
+                    {cat.exercises.map(ex => {
+                      const isActive = ex.id === currentExercise.id;
+                      const isDone = completedIds.has(ex.id);
+                      const isBookmarked = bookmarkedIds.has(ex.id);
+
+                      return (
+                        <button
+                          key={ex.id}
+                          onClick={() => {
+                            setCurrentExerciseId(ex.id);
+                            onSelectExercise?.();
+                          }}
+                          className={cn(
+                            'w-full text-left px-2 py-1 rounded-md text-xs flex items-center justify-between gap-1.5 transition-all group',
+                            isActive
+                              ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 font-medium'
+                              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'
+                          )}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            {isDone ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                            ) : isActive ? (
+                              <div className="w-3.5 h-3.5 flex items-center justify-center shrink-0">
+                                <div className="w-1.5 h-1.5 rounded-full bg-zinc-200" />
+                              </div>
+                            ) : (
+                              <Circle className="w-3 h-3 text-zinc-600 shrink-0" />
+                            )}
+                            <span className={cn(
+                              "text-[9px] font-mono px-1 py-0.2 rounded font-bold shrink-0",
+                              ex.language === 'typescript'
+                                ? "bg-blue-500/15 text-blue-400 border border-blue-500/30"
+                                : "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                            )}>
+                              {ex.language === 'typescript' ? 'TS' : 'JS'}
+                            </span>
+                            <span className="truncate">{ex.title}</span>
+                          </div>
+
+                          {isBookmarked && (
+                            <Bookmark className="w-3 h-3 fill-zinc-300 text-zinc-300 shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Sidebar Footer */}
+      <div className="p-2.5 border-t border-zinc-800/80 bg-zinc-950/40 text-[11px] text-zinc-500 flex items-center justify-between shrink-0">
+        <span>Press <kbd className="px-1 py-0.2 text-[10px] font-mono bg-zinc-850 text-zinc-400 rounded border border-zinc-800">{getShortcut('⌘K', 'Ctrl+K')}</kbd> to switch</span>
+        <span className="font-mono">{completedIds.size}/{exercises.length}</span>
+      </div>
+    </>
+  );
+};
+
+export interface SidebarProps {
+  width: number;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  width,
+  collapsed,
+  onToggleCollapse,
+}) => {
+  const { exercises, currentExercise, setCurrentExerciseId, completedIds, getShortcut } = useRustlings();
+
+  if (collapsed) {
+    return (
+      <div className="w-12 border-r border-zinc-800/80 bg-[#09090b] hidden md:flex flex-col items-center py-2.5 gap-3 shrink-0 select-none">
+        <Tooltip content="Expand Sidebar" shortcut={getShortcut('⌘B', 'Ctrl+B')} side="right">
+          <button
+            onClick={onToggleCollapse}
+            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-850 transition-colors"
+          >
+            <PanelLeft className="w-4 h-4 text-zinc-400" />
+          </button>
+        </Tooltip>
+        <div className="h-px w-6 bg-zinc-800/80" />
+        <div className="flex-1 flex flex-col items-center gap-1.5 overflow-y-auto w-full px-1">
+          {exercises.map(ex => {
+            const isDone = completedIds.has(ex.id);
+            const isActive = ex.id === currentExercise.id;
+            return (
+              <Tooltip key={ex.id} content={`${ex.title} (${ex.categoryTitle})`} side="right">
+                <button
+                  onClick={() => setCurrentExerciseId(ex.id)}
+                  className={cn(
+                    'w-7 h-7 rounded-md flex items-center justify-center text-[10px] font-mono transition-all',
+                    isActive
+                      ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 font-bold'
+                      : isDone
+                      ? 'text-zinc-300 hover:bg-zinc-850'
+                      : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900'
+                  )}
+                >
+                  {isDone ? '✓' : ex.order}
+                </button>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <aside
+      style={{ width }}
+      className="border-r border-zinc-800/80 bg-[#09090b] hidden md:flex flex-col shrink-0 select-none overflow-hidden h-full"
+    >
+      {/* Desktop Sidebar Header */}
+      <div className="p-3 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2 text-xs font-semibold text-zinc-200">
+          <Layers className="w-3.5 h-3.5 text-zinc-400" />
+          <span>Curriculum Modules</span>
+          <span className="text-[10px] text-zinc-400 bg-zinc-850 px-1.5 py-0.2 rounded-full border border-zinc-800">
+            {exercises.length}
+          </span>
+        </div>
+        <Tooltip content="Collapse Sidebar" shortcut={getShortcut('⌘B', 'Ctrl+B')} side="bottom">
+          <button
+            onClick={onToggleCollapse}
+            className="p-1 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+          >
+            <PanelLeftClose className="w-4 h-4 text-zinc-400" />
+          </button>
+        </Tooltip>
+      </div>
+
+      <SidebarContent />
+    </aside>
+  );
+};
+
+export const MobileSidebarDrawer: React.FC = () => {
+  const { exercises, mobileSidebarOpen, toggleMobileSidebar } = useRustlings();
+
+  if (!mobileSidebarOpen) return null;
+
+  return (
+    <>
+      <div
+        className="fixed inset-0 z-40 bg-black/70 backdrop-blur-xs md:hidden animate-in fade-in duration-200"
+        onClick={toggleMobileSidebar}
+      />
+      <aside className="fixed inset-y-0 left-0 z-50 w-[85vw] max-w-xs sm:max-w-sm bg-[#09090b] shadow-2xl border-r border-zinc-800 flex md:hidden flex-col animate-in slide-in-from-left duration-200 select-none">
+        {/* Mobile Drawer Header */}
+        <div className="p-3 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2 text-xs font-semibold text-zinc-200">
+            <Layers className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Curriculum Modules</span>
+            <span className="text-[10px] text-zinc-400 bg-zinc-850 px-1.5 py-0.2 rounded-full border border-zinc-800">
+              {exercises.length}
+            </span>
+          </div>
+          <button
+            onClick={toggleMobileSidebar}
+            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+            aria-label="Close drawer"
+          >
+            <X className="w-4 h-4 text-zinc-400" />
+          </button>
+        </div>
+
+        <SidebarContent onSelectExercise={toggleMobileSidebar} />
+      </aside>
+    </>
+  );
+};
