@@ -1,7 +1,7 @@
 import React from 'react';
 import { Download, X } from 'lucide-react';
 import { useRustlings } from '../context/RustlingsContext';
-import { Button } from './ui/Button';
+import { Button } from '@learnit/ui';
 
 export const PWAInstallBanner: React.FC = () => {
   const { canInstall, isInstalled, showInstallBanner, promptInstall, dismissInstallBanner } = useRustlings();

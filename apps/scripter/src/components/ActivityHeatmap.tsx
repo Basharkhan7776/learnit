@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useRustlings } from '../context/RustlingsContext';
-import { Tooltip } from './ui/Tooltip';
+import { Tooltip } from '@learnit/ui';
 import { cn } from '../lib/utils';
 import { Flame, Calendar, Award, CheckCircle2 } from 'lucide-react';
 

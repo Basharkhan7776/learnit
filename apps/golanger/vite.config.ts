@@ -134,6 +134,17 @@ function localGoRunnerPlugin(): Plugin {
 }
 
 export default defineConfig({
+  server: {
+    port: 5174,
+    strictPort: true,
+  },
+  resolve: {
+    alias: {
+      '@learnit/ui': path.resolve(import.meta.dirname, '../../packages/ui/src'),
+      '@repo/ui': path.resolve(import.meta.dirname, '../../packages/ui/src'),
+      'ui': path.resolve(import.meta.dirname, '../../packages/ui/src'),
+    },
+  },
   plugins: [
     localGoRunnerPlugin(),
     tailwindcss(),

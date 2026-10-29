@@ -164,6 +164,17 @@ function localRustRunnerPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+  resolve: {
+    alias: {
+      '@learnit/ui': path.resolve(import.meta.dirname, '../../packages/ui/src'),
+      '@repo/ui': path.resolve(import.meta.dirname, '../../packages/ui/src'),
+      'ui': path.resolve(import.meta.dirname, '../../packages/ui/src'),
+    },
+  },
   plugins: [
     localRustRunnerPlugin(),
     tailwindcss(),

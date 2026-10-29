@@ -5,7 +5,7 @@ import { Sidebar, MobileSidebarDrawer } from './components/Sidebar';
 import { CodeEditor } from './components/CodeEditor';
 import { InstructionsPane } from './components/InstructionsPane';
 import { TerminalOutput } from './components/TerminalOutput';
-import { ResizeHandle } from './components/ui/ResizeHandle';
+import { ResizeHandle } from '@learnit/ui';
 import { MobileTabBar } from './components/MobileTabBar';
 import { CommandPalette } from './components/CommandPalette';
 import { SolutionModal } from './components/Modals/SolutionModal';

@@ -1,0 +1,20 @@
+model UserProgress {
+  id                String   @id @default(cuid())
+  userId            String
+  app               String   // "rustal" | "golanger" | "scripter"
+  completedIds      String[]
+  userCode          Json
+  bookmarks         String[]
+  notes             Json
+  settings          Json
+  activityHistory   Json?
+  currentExerciseId String?
+  version           Int      @default(1)
+  updatedAt         DateTime @updatedAt
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, app])
+  @@index([userId])
+  @@map("user_progress")
+}

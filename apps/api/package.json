@@ -3,17 +3,21 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "bun run --watch src/index.ts",
+    "dev": "PORT=4000 bun run --watch src/index.ts",
     "build": "bun build --target=bun --outdir=./dist ./src/index.ts",
-    "start": "bun run src/index.ts",
+    "start": "PORT=4000 bun run src/index.ts",
     "lint": "tsc --noEmit",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.4.2",
+    "better-auth": "^1.7.14",
     "elysia": "latest"
   },
   "devDependencies": {
+    "@prisma/client": "6.18.0",
     "bun-types": "latest",
+    "prisma": "6.18.0",
     "typescript": "^5.8.0"
   }
 }

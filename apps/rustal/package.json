@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5173",
     "build": "tsc -b && vite build",
     "check-types": "tsc -b --noEmit",
     "extract": "bun run scripts/extract-exercises.ts",
@@ -12,6 +12,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@learnit/sync": "workspace:*",
+    "@learnit/ui": "workspace:*",
     "@monaco-editor/react": "^4.7.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",

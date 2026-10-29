@@ -11,15 +11,16 @@ import {
   Play,
   RotateCcw,
 } from 'lucide-react';
+import { CloudSyncBadge } from '@learnit/sync';
 import { useGolang } from '../context/GolangContext';
-import { Button } from './ui/Button';
-import { Tooltip } from './ui/Tooltip';
-import { GoLogo } from './ui/GoLogo';
 import {
+  Button,
+  Tooltip,
+  GoLogo,
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from './ui/DropdownMenu';
+} from '@learnit/ui';
 
 export const Header: React.FC = () => {
   const {
@@ -39,6 +40,7 @@ export const Header: React.FC = () => {
     runCode,
     isRunning,
     resetCurrentCode,
+    cloudSync,
   } = useGolang();
 
   const isCompleted = completedIds.has(currentExercise.id);
@@ -218,6 +220,15 @@ export const Header: React.FC = () => {
             <Settings className="w-4 h-4 text-zinc-400" />
           </Button>
         </Tooltip>
+
+        {/* Cloud Sync & Auth Badge */}
+        <CloudSyncBadge
+          session={cloudSync.session}
+          syncStatus={cloudSync.syncStatus}
+          lastSyncedAt={cloudSync.lastSyncedAt}
+          onSyncNow={cloudSync.syncNow}
+          onLogout={cloudSync.logout}
+        />
       </div>
 
       {/* ================= MOBILE CONTROLS ================= */}

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useRustlings } from '../context/RustlingsContext';
 import { cn } from '../lib/utils';
-import { Tooltip } from './ui/Tooltip';
+import { Tooltip } from '@learnit/ui';
 
 interface SidebarContentProps {
   onSelectExercise?: () => void;

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, CheckCircle2, Circle, CornerDownLeft } from 'lucide-react';
 import { useGolang } from '../context/GolangContext';
 import { cn } from '../lib/utils';
-import { Badge } from './ui/Badge';
+import { Badge } from '@learnit/ui';
 
 export const CommandPalette: React.FC = () => {
   const {

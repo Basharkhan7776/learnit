@@ -13,8 +13,7 @@ import {
 } from 'lucide-react';
 import { useGolang } from '../../context/GolangContext';
 import { exportProgressSnapshot, importProgressSnapshot } from '../../lib/storage';
-import { Modal } from '../ui/Modal';
-import { Button } from '../ui/Button';
+import { Button, Modal } from '@learnit/ui';
 import { ActivityHeatmap } from '../ActivityHeatmap';
 
 export const SettingsModal: React.FC = () => {

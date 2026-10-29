@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
+import { useCloudSync, type SyncStatus, type UserSession } from '@learnit/sync';
 import rawExercises from '../data/exercises.json';
 import type { Exercise, CompileResult, AppSettings } from '../types/exercise';
 import {
@@ -14,6 +15,8 @@ import {
   setStoredBookmarks,
   getStoredSettings,
   saveStoredSettings,
+  getStoredNotes,
+  restoreProgressSnapshot,
   getActivityHistory,
   recordDailyActivity,
   clearAllLocalProgress,
@@ -74,6 +77,13 @@ interface GolangContextValue {
   resetAllProgress: () => void;
   isEditorFocused: boolean;
   setIsEditorFocused: React.Dispatch<React.SetStateAction<boolean>>;
+  cloudSync: {
+    session: UserSession | null;
+    syncStatus: SyncStatus;
+    lastSyncedAt: Date | null;
+    syncNow: () => void;
+    logout: () => void;
+  };
 }
 
 const GolangContext = createContext<GolangContextValue | null>(null);
@@ -155,6 +165,35 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const getLocalSnapshot = useCallback(() => {
+    return {
+      version: 1 as const,
+      exportedAt: new Date().toISOString(),
+      completedIds: Array.from(completedIds),
+      userCode: userCodes,
+      bookmarks: Array.from(bookmarkedIds),
+      notes: getStoredNotes(),
+      settings,
+      activityHistory,
+      currentExerciseId: currentId,
+    };
+  }, [completedIds, userCodes, bookmarkedIds, settings, activityHistory, currentId]);
+
+  const onRemoteUpdate = useCallback((snapshot: any) => {
+    restoreProgressSnapshot(snapshot);
+    if (snapshot.completedIds) setCompletedIds(new Set(snapshot.completedIds));
+    if (snapshot.bookmarks) setBookmarkedIds(new Set(snapshot.bookmarks));
+    if (snapshot.userCode) setUserCodes(getStoredUserCodes());
+    if (snapshot.settings) setSettings(snapshot.settings);
+    if (snapshot.activityHistory) setActivityHistory(snapshot.activityHistory);
+  }, []);
+
+  const cloudSync = useCloudSync({
+    appName: 'golanger',
+    getLocalSnapshot,
+    onRemoteUpdate,
+  });
+
   const nextExercise = useCallback(() => {
     const curIdx = exercises.findIndex(e => e.id === currentExercise.id);
     if (curIdx < exercises.length - 1) {
@@ -175,7 +214,8 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
       [currentExercise.id]: code,
     }));
     saveStoredUserCode(currentExercise.id, code);
-  }, [currentExercise.id]);
+    cloudSync.queuePush();
+  }, [currentExercise.id, cloudSync]);
 
   const resetCurrentCode = useCallback(() => {
     setUserCodes(prev => {
@@ -185,7 +225,8 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
     });
     removeStoredUserCode(currentExercise.id);
     setLastResult(null);
-  }, [currentExercise.id]);
+    cloudSync.queuePush();
+  }, [currentExercise.id, cloudSync]);
 
   const applySolution = useCallback(() => {
     if (currentExercise.solutionCode) {
@@ -206,7 +247,8 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
       setStoredCompletedIds(Array.from(next));
       return next;
     });
-  }, []);
+    cloudSync.queuePush();
+  }, [cloudSync]);
 
   const toggleBookmark = useCallback((id: string) => {
     setBookmarkedIds(prev => {
@@ -219,7 +261,8 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
       setStoredBookmarks(Array.from(next));
       return next;
     });
-  }, []);
+    cloudSync.queuePush();
+  }, [cloudSync]);
 
   const updateSettings = useCallback((newSettings: Partial<AppSettings>) => {
     setSettings(prev => {
@@ -259,6 +302,7 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
           }
           return prev;
         });
+        cloudSync.queuePush();
 
         confetti({
           particleCount: 50,
@@ -278,7 +322,7 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsRunning(false);
     }
-  }, [currentCode, currentExercise.id, currentExercise.mode, isRunning, updateCode]);
+  }, [currentCode, currentExercise.id, currentExercise.mode, isRunning, updateCode, cloudSync]);
 
   const resetAllProgress = useCallback(() => {
     clearAllLocalProgress();
@@ -420,6 +464,7 @@ export function GolangProvider({ children }: { children: React.ReactNode }) {
         resetAllProgress,
         isEditorFocused,
         setIsEditorFocused,
+        cloudSync,
       }}
     >
       {children}

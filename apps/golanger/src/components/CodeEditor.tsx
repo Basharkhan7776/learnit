@@ -12,8 +12,7 @@ import {
 } from 'lucide-react';
 import { useGolang } from '../context/GolangContext';
 import { useKeyboardViewport } from '../hooks/useKeyboardViewport';
-import { Button } from './ui/Button';
-import { Tooltip } from './ui/Tooltip';
+import { Button, Tooltip } from '@learnit/ui';
 
 const LEFT_GO_SYMBOLS = [
   '{', '}', '(', ')', '[', ']', ';', ':', ':=', '<-',

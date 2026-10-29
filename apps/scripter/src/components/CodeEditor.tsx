@@ -13,8 +13,7 @@ import {
 } from 'lucide-react';
 import { useRustlings } from '../context/RustlingsContext';
 import { useKeyboardViewport } from '../hooks/useKeyboardViewport';
-import { Button } from './ui/Button';
-import { Tooltip } from './ui/Tooltip';
+import { Button, Tooltip } from '@learnit/ui';
 
 const LEFT_JS_SYMBOLS = [
   '{', '}', '(', ')', '[', ']', ';', ':', '=>', '===',

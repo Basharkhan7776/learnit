@@ -9,15 +9,16 @@ import {
   MoreVertical,
   Download,
 } from 'lucide-react';
+import { CloudSyncBadge } from '@learnit/sync';
 import { JavaScriptLogo, TypeScriptLogo } from './icons/JavaScriptLogo';
 import { useRustlings } from '../context/RustlingsContext';
-import { Button } from './ui/Button';
-import { Tooltip } from './ui/Tooltip';
 import {
+  Button,
+  Tooltip,
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from './ui/DropdownMenu';
+} from '@learnit/ui';
 
 export const Header: React.FC = () => {
   const {
@@ -36,6 +37,7 @@ export const Header: React.FC = () => {
     setShowCommandPalette,
     promptInstall,
     isInstalled,
+    cloudSync,
   } = useRustlings();
 
   const isCompleted = completedIds.has(currentExercise.id);
@@ -195,6 +197,15 @@ export const Header: React.FC = () => {
             <Settings className="w-4 h-4 text-zinc-400" />
           </Button>
         </Tooltip>
+
+        {/* Cloud Sync & Auth Badge */}
+        <CloudSyncBadge
+          session={cloudSync.session}
+          syncStatus={cloudSync.syncStatus}
+          lastSyncedAt={cloudSync.lastSyncedAt}
+          onSyncNow={cloudSync.syncNow}
+          onLogout={cloudSync.logout}
+        />
       </div>
 
       {/* ================= MOBILE CONTROLS ================= */}

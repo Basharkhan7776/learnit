@@ -15,8 +15,7 @@ import {
 } from 'lucide-react';
 import { useRustlings } from '../context/RustlingsContext';
 import { cn } from '../lib/utils';
-import { Button } from './ui/Button';
-import { Tooltip } from './ui/Tooltip';
+import { Button, Tooltip } from '@learnit/ui';
 import {
   getStoredInstructionsFontSize,
   setStoredInstructionsFontSize,

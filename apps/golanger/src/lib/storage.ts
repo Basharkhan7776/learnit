@@ -204,8 +204,8 @@ export function setStoredTerminalFontSize(size: number): void {
   } catch {}
 }
 
-export function exportProgressSnapshot(): string {
-  const snapshot: LocalStorageSnapshot = {
+export function createProgressSnapshot(): LocalStorageSnapshot {
+  return {
     version: 1,
     exportedAt: new Date().toISOString(),
     completedIds: getStoredCompletedIds(),
@@ -215,12 +215,10 @@ export function exportProgressSnapshot(): string {
     settings: getStoredSettings(),
     activityHistory: getActivityHistory(),
   };
-  return JSON.stringify(snapshot, null, 2);
 }
 
-export function importProgressSnapshot(jsonStr: string): boolean {
+export function restoreProgressSnapshot(data: Partial<LocalStorageSnapshot>): boolean {
   try {
-    const data = JSON.parse(jsonStr);
     if (!data || typeof data !== 'object') return false;
 
     if (Array.isArray(data.completedIds)) {
@@ -242,6 +240,19 @@ export function importProgressSnapshot(jsonStr: string): boolean {
       localStorage.setItem(STORAGE_KEYS.ACTIVITY, JSON.stringify(data.activityHistory));
     }
     return true;
+  } catch {
+    return false;
+  }
+}
+
+export function exportProgressSnapshot(): string {
+  return JSON.stringify(createProgressSnapshot(), null, 2);
+}
+
+export function importProgressSnapshot(jsonStr: string): boolean {
+  try {
+    const data = JSON.parse(jsonStr);
+    return restoreProgressSnapshot(data);
   } catch {
     return false;
   }

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Copy, Check, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useRustlings } from '../../context/RustlingsContext';
-import { Modal } from '../ui/Modal';
-import { Button } from '../ui/Button';
+import { Button, Modal } from '@learnit/ui';
 
 export const SolutionModal: React.FC = () => {
   const {
