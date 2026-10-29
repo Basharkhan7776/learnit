@@ -7,37 +7,7 @@ export async function executeGoCode(code: string, mode: ExerciseMode): Promise<C
   const startTime = performance.now();
   const isTestMode = mode === 'test' || code.includes('func Test') || code.includes('*testing.T');
 
-  // Tier 1: Attempt local/serverless compiler endpoint first (provided by Vite dev server or Vercel serverless function)
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-    const localResp = await fetch('/api/compile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, isTest: isTestMode }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (localResp.ok) {
-      const data = await localResp.json();
-      const duration = Math.round(performance.now() - startTime);
-
-      return {
-        success: Boolean(data.success),
-        stdout: data.stdout || '',
-        stderr: data.stderr || '',
-        exitDetail: data.exitDetail || (data.success ? 'Exited with status 0' : 'Execution failed'),
-        executionTimeMs: duration,
-        engine: 'local',
-      };
-    }
-  } catch {
-    // If /api/compile is unreachable (e.g. static preview, GitHub Pages, Netlify static, offline), proceed to WASM
-  }
-
-  // Tier 2: In-Browser WebAssembly Go Execution Engine (Yaegi WASM inside Web Worker)
+  // Tier 1: In-Browser WebAssembly Go Execution Engine (Yaegi WASM inside Web Worker)
   try {
     const wasmResult = await goWasmRunner.run(code, isTestMode, 8000);
     return {
@@ -45,10 +15,10 @@ export async function executeGoCode(code: string, mode: ExerciseMode): Promise<C
       engine: 'wasm',
     };
   } catch (wasmErr: any) {
-    console.warn('WASM execution error, attempting remote fallback:', wasmErr);
+    console.warn('WASM execution error, attempting remote playground fallback:', wasmErr);
   }
 
-  // Tier 3: Fallback to official Go Playground API (for standard environments where remote requests are permitted)
+  // Tier 2: Fallback to official Go Playground API
   try {
     const params = new URLSearchParams();
     params.append('version', '2');
@@ -68,38 +38,39 @@ export async function executeGoCode(code: string, mode: ExerciseMode): Promise<C
 
       let stdout = '';
       if (Array.isArray(data.Events)) {
-        stdout = data.Events.map((e: any) => e.Message || '').join('');
+        stdout = data.Events.map((e: any) => e.Message).join('');
       }
 
-      const stderr = data.Errors || data.VetErrors || '';
-      let passed = !stderr;
-
-      if (isTestMode) {
-        const combined = `${stdout} ${stderr}`;
-        const hasFail = combined.includes('--- FAIL:') || combined.includes('FAIL\t') || combined.includes('\nFAIL');
-        const hasPass = combined.includes('PASS\n') || combined.includes('--- PASS:');
-        passed = !stderr && !hasFail && hasPass;
-      }
+      const stderr = data.Errors || '';
+      const success = !stderr && (data.Status === 0 || !data.Status);
 
       return {
-        success: passed,
-        stdout: stdout,
-        stderr: stderr,
-        exitDetail: data.Errors ? 'Compilation failed' : (passed ? 'Exited with status 0' : 'Test failed'),
+        success,
+        stdout,
+        stderr,
+        exitDetail: success ? 'Exited with status 0' : 'Execution failed',
         executionTimeMs: duration,
-        engine: 'serverless',
+        engine: 'playground',
       };
     }
-  } catch {
-    // Both endpoints failed
+  } catch (err: any) {
+    const duration = Math.round(performance.now() - startTime);
+    return {
+      success: false,
+      stdout: '',
+      stderr: `Network/Execution error: ${err.message || 'Failed to execute Go code'}`,
+      exitDetail: 'Network request failed',
+      executionTimeMs: duration,
+      engine: 'playground',
+    };
   }
 
   const duration = Math.round(performance.now() - startTime);
   return {
     success: false,
     stdout: '',
-    stderr: 'Failed to execute code: Local backend is unavailable and in-browser WebAssembly could not complete.\nEnsure WebAssembly is enabled in your browser or dev server is active.',
-    exitDetail: 'Execution Failed',
+    stderr: 'Failed to execute Go code via WASM or Playground fallback.',
+    exitDetail: 'Execution engine unavailable',
     executionTimeMs: duration,
   };
 }

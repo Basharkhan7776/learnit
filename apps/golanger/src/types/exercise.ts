@@ -40,7 +40,7 @@ export interface CompileResult {
   stderr: string;
   exitDetail?: string;
   executionTimeMs?: number;
-  engine?: 'local' | 'wasm' | 'serverless';
+  engine?: 'local' | 'wasm' | 'serverless' | 'playground';
 }
 
 export interface AppSettings {
