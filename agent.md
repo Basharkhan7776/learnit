@@ -15,7 +15,7 @@ learnit/
 │   ├── api/            # ElysiaJS backend on Port 4000 (Better Auth + Sync + Prisma)
 │   ├── web/            # React + Vite + shadcn/ui portal on Port 3000 (Auth & Overview)
 │   ├── rustal/         # Rustlings curriculum on Port 5173
-│   ├── golanger/       # Go Yaegi/WASM curriculum on Port 5174
+│   ├── golanger/       # Go curriculum on Port 5174 (100% WebAssembly via Yaegi, zero Go install required)
 │   └── scripter/       # JS, TS & ElysiaJS curriculum on Port 5175
 ├── packages/
 │   ├── ui/             # Shared @learnit/ui components with per-app color palettes
